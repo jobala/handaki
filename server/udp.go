@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	"github.com/songgao/water"
 )
 
-func Start(port string) {
+func Start(iface *water.Interface, port string) {
 	p, err := net.ResolveUDPAddr("udp4", port)
 	if err != nil {
 		log.Fatalf("address resolution failed: %v", err)
@@ -23,5 +25,11 @@ func Start(port string) {
 		if _, _, err := conn.ReadFromUDP(buf); err != nil {
 			fmt.Println("failed to read from UDP")
 		}
+		log.Println("received packet")
+
+		if _, err := iface.Write(buf); err != nil {
+			log.Println("failed to write to interface")
+		}
+		log.Println()
 	}
 }

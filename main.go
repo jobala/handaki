@@ -18,9 +18,9 @@ const (
 func main() {
 	isServer := false
 	if isServer {
-		server.Start()
+		server.Start("")
 	} else {
-		client.Start()
+		client.Start("")
 	}
 
 	tun, err := water.New(water.Config{DeviceType: water.TUN})

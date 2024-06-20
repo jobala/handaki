@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/jobala/handaki/client"
+	"github.com/jobala/handaki/server"
 	"github.com/songgao/water"
+	"golang.org/x/net/ipv4"
 )
 
 const (
@@ -13,6 +16,13 @@ const (
 )
 
 func main() {
+	isServer := false
+	if isServer {
+		server.Start()
+	} else {
+		client.Start()
+	}
+
 	tun, err := water.New(water.Config{DeviceType: water.TUN})
 	fmt.Println(tun)
 	if err != nil {
@@ -22,11 +32,12 @@ func main() {
 	for {
 		buf := make([]byte, BUFFER_SIZE)
 
-		if _, err = tun.Read(buf); err != nil {
+		n, err := tun.Read(buf)
+		if err != nil {
 			log.Println("failed to read packets")
 		}
 
-		fmt.Println(buf)
+		header, _ := ipv4.ParseHeader(buf[:n])
+		fmt.Printf("read %d bytes from device %s\n", header.TotalLen, tun.Name())
 	}
-
 }

@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/songgao/water"
+	"golang.org/x/net/ipv4"
 )
 
 func Start(iface *water.Interface, port string) {
@@ -30,6 +31,11 @@ func Start(iface *water.Interface, port string) {
 		if _, err := iface.Write(buf); err != nil {
 			log.Println("failed to write to interface")
 		}
-		log.Println()
+		header, err := ipv4.ParseHeader(buf)
+		if err != nil {
+			log.Println("failed to parse ipv4 header")
+		}
+		log.Println("wrote packet to interface")
+		log.Println(header.Src, header.Dst)
 	}
 }
